@@ -64,3 +64,7 @@ func TestOpenSkyTierLimits(t *testing.T) {
 	// Clean up
 	os.Unsetenv("OPENSKY_TIER")
 }
+
+func init() {
+	os.Setenv("JWT_SECRET", "test-jwt-secret-0123456789abcdef0123456789")
+}

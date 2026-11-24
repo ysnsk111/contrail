@@ -31,7 +31,12 @@ type CaptchaChallenge struct {
 // NewCaptchaManager initializes the manager.
 func NewCaptchaManager(secret string) *CaptchaManager {
 	if secret == "" {
-		secret = "contrail-default-anti-bot-captcha-secret-2026"
+		// No configured secret: use a random per-process key (never a fixed default).
+		b := make([]byte, 32)
+		if _, err := rand.Read(b); err != nil {
+			panic("captcha: cannot generate random secret: " + err.Error())
+		}
+		secret = hex.EncodeToString(b)
 	}
 	cm := &CaptchaManager{
 		secretKey: []byte(secret),

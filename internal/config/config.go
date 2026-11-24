@@ -212,6 +212,10 @@ func LoadConfig() *Config {
 	smtpFrom := getEnv("SMTP_FROM", "Contrail <no-reply@veyino.org>")
 
 	jwtSecret := getEnv("JWT_SECRET", "")
+	if len(jwtSecret) < 32 {
+		os.Stderr.WriteString("FATAL: JWT_SECRET must be set to a random value of at least 32 characters\n")
+		os.Exit(1)
+	}
 	rateLimitRPM := getEnvInt("RATE_LIMIT_RPM", 60)
 	rateLimitRPH := getEnvInt("RATE_LIMIT_RPH", 1000)
 	rateLimitDaily := getEnvInt("RATE_LIMIT_DAILY", 10000)
