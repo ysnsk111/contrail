@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>API Documentation — Contrail Flight Telemetry</title>
+  <link rel="icon" type="image/png" href="/static/logo.png">
+  <link rel="stylesheet" href="/static/app.css">
+  <style>
+    :root {
+      --bg-primary: #090a0d;
+      --bg-card: #111317;
+      --bg-card-subtle: #16181f;
+      --border-subtle: #242731;
+      --border-focus: #3b82f6;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --text-dim: #6b7280;
+      --accent-blue: #3b82f6;
+      --accent-amber: #d97706;
+      --accent-violet: #8b5cf6;
+      --accent-emerald: #10b981;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", "Helvetica Neue", sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .docs-header {
+      border-bottom: 1px solid var(--border-subtle);
+      background: rgba(9, 10, 13, 0.9);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding: 14px 24px;
+    }
+
+    .docs-header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      padding: 7px 14px;
+      border-radius: var(--radius-sm);
+      transition: all 0.15s ease;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      color: var(--text-main);
+      border-color: #4b5563;
+      background: var(--bg-card-subtle);
+    }
+
+    .docs-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 24px 64px 24px;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 36px;
+      flex: 1;
+      width: 100%;
+    }
+
+    @media (max-width: 860px) {
+      .docs-container {
+        grid-template-columns: 1fr;
+      }
+      .docs-sidebar {
+        display: none;
+      }
+    }
+
+    .docs-sidebar {
+      position: sticky;
+      top: 80px;
+      height: calc(100vh - 100px);
+      overflow-y: auto;
+      padding-right: 12px;
+    }
+
+    .sidebar-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      margin: 18px 0 8px 0;
+    }
+
+    .sidebar-link {
+      display: block;
+      padding: 6px 10px;
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+      border-radius: 4px;
+      transition: all 0.15s ease;
+      margin-bottom: 2px;
+    }
+
+    .sidebar-link:hover {
+      color: var(--text-main);
+      background: var(--bg-card);
+    }
+
+    .sidebar-link.active {
+      color: var(--accent-blue);
+      background: rgba(59, 130, 246, 0.1);
+      font-weight: 600;
+    }
+
+    .docs-content {
+      min-width: 0;
+    }
+
+    .doc-section {
+      margin-bottom: 48px;
+      scroll-margin-top: 90px;
+    }
+
+    .doc-section h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+      color: var(--text-main);
+    }
+
+    .doc-section h2 {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin: 32px 0 14px 0;
+      color: var(--text-main);
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 8px;
+    }
+
+    .doc-section h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 20px 0 10px 0;
+      color: #e5e7eb;
+    }
+
+    .doc-section p {
+      font-size: 14.5px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .endpoint-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .endpoint-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .badge-method {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    .badge-get { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-post { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+
+    .endpoint-path {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .param-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      font-size: 13px;
+    }
+
+    .param-table th, .param-table td {
+      padding: 8px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .param-table th {
+      color: var(--text-dim);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .param-table td code {
+      font-size: 12px;
+      color: #93c5fd;
+    }
+
+    .code-box {
+      background: #000000;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12.5px;
+      line-height: 1.5;
+      overflow-x: auto;
+      color: #e5e7eb;
+      position: relative;
+      margin: 12px 0;
+    }
+
+    .code-copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      font-size: 11px;
+      padding: 4px 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .code-copy-btn:hover {
+      color: var(--text-main);
+      border-color: #4b5563;
+    }
+
+    .callout {
+      border-left: 3px solid var(--accent-amber);
+      background: rgba(217, 119, 6, 0.08);
+      padding: 14px 18px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin: 18px 0;
+      font-size: 13.5px;
+      color: #d1d5db;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="docs-header">
+    <div class="docs-header-inner">
+      <div style="display:flex; align-items:center; gap:16px;">
+        <a href="/" class="back-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Back to Contrail
+        </a>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <img src="/static/logo.png" alt="Contrail Logo" style="width:24px; height:24px; border-radius:4px;">
+          <span style="font-weight:600; font-size:15px; letter-spacing:-0.01em;">Contrail API Documentation</span>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <a href="/terms" class="sidebar-link" style="padding: 6px 12px;">Terms & Compliance</a>
+        <a href="/#console/overview" class="btn btn-primary" style="padding: 6px 14px; font-size: 13px;">Open Console</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="docs-container">
+    <!-- Sidebar Navigation -->
+    <aside class="docs-sidebar">
+      <div class="sidebar-section-title">Getting Started</div>
+      <a href="#overview" class="sidebar-link active">Overview</a>
+      <a href="#authentication" class="sidebar-link">Authentication & Limits</a>
+      <a href="#attribution-policy" class="sidebar-link">Attribution Policy</a>
+
+      <div class="sidebar-section-title">Telemetry Endpoints</div>
+      <a href="#ep-health" class="sidebar-link">GET /api/v1/health</a>
+      <a href="#ep-flights" class="sidebar-link">GET /api/v1/flights</a>
+      <a href="#ep-flight-detail" class="sidebar-link">GET /api/v1/flights/{id}</a>
+      <a href="#ep-history" class="sidebar-link">GET /api/v1/history</a>
+      <a href="#ep-emergencies" class="sidebar-link">GET /api/v1/emergencies</a>
+      <a href="#ep-diversions" class="sidebar-link">GET /api/v1/diversions</a>
+      <a href="#ep-airports" class="sidebar-link">GET /api/v1/airports/{code}</a>
+      <a href="#ep-stats" class="sidebar-link">GET /api/v1/stats</a>
+      <a href="#ep-query" class="sidebar-link">POST /api/v1/query</a>
+
+      <div class="sidebar-section-title">Schema & Types</div>
+      <a href="#schema-groups" class="sidebar-link">7 Core Field Groups</a>
+      <a href="#status-codes" class="sidebar-link">HTTP Status Codes</a>
+    </aside>
+
+    <!-- Main Documentation Content -->
+    <main class="docs-content">
+      <!-- Section 1: Overview -->
+      <section id="overview" class="doc-section">
+        <h1>Contrail API Reference</h1>
+        <p>
+          Contrail is a near-real-time global aviation telemetry service and radar platform. It aggregates live ADS-B state vectors from The OpenSky Network and community sensor nodes (adsb.lol mesh), dynamically enriched with commercial airline metadata, OurAirports aerodrome references, transponder emergency triggers, and predictive diversion algorithms.
+        </p>
+        <div class="callout">
+          <strong>Base URL:</strong> <code>https://airline.api.veyino.org</code><br>
+          <strong>API Version:</strong> <code>v1.0</code> &mdash; All endpoints return JSON responses with standard telemetry envelopes, pagination metadata, and provider attribution.
+        </div>
+      </section>
+
+      <!-- Section 2: Authentication -->
+      <section id="authentication" class="doc-section">
+        <h2>Authentication & Rate Limiting</h2>
+        <p>
+          All data endpoints require a registered API key. Registration is free for verified non-commercial, research, and educational uses.
+        </p>
+        <h3>Providing Your API Key</h3>
+        <p>Pass your API key in every request using either the <code>X-API-Key</code> HTTP header (recommended) or the <code>api_key</code> query parameter:</p>
+        <div class="code-box">
+# Method 1: HTTP Header (Recommended)
+curl -H "X-API-Key: ct_live_your_api_key_here" "https://airline.api.veyino.org/api/v1/flights?limit=5"
+
+# Method 2: Query Parameter
+curl "https://airline.api.veyino.org/api/v1/flights?api_key=ct_live_your_api_key_here&limit=5"
+        </div>
+
+        <h3>Default Rate Limits</h3>
+        <table class="param-table">
+          <thead>
+            <tr><th>Metric</th><th>Allowance</th><th>Scope</th><th>Enforcement Action</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Requests per Minute (RPM)</td><td>60 req/min</td><td>Per API Key</td><td>HTTP 429 Too Many Requests, Retry-After header</td></tr>
+            <tr><td>Requests per Hour (RPH)</td><td>1,000 req/hr</td><td>Per API Key</td><td>HTTP 429 Too Many Requests</td></tr>
+            <tr><td>Daily Quota</td><td>10,000 req/day</td><td>Per Account</td><td>HTTP 429 Rate Limit Exceeded</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:13px; color:var(--text-dim);">
+          Requests exceeding limits trigger automated email warnings. Continued aggressive flooding may result in key revocation.
+        </p>
+      </section>
+
+      <!-- Section 3: Attribution Policy -->
+      <section id="attribution-policy" class="doc-section">
+        <h2>Attribution & License Notice</h2>
+        <p>
+          Contrail is licensed strictly for <strong>Non-Commercial Use Only</strong>. Every API response includes a top-level <code>attribution</code> object acknowledging upstream providers:
+        </p>
+        <div class="code-box">
+{
+  "api_version": "v1.0",
+  "base_url": "https://airline.api.veyino.org",
+  "attribution": {
+    "notice": "Strictly Non-Commercial Use Only. Contrail collects and redistributes data as-is...",
+    "sources": [
+      "Live aircraft positions: The OpenSky Network (https://opensky-network.org)",
+      "Live aircraft positions: adsb.lol (https://adsb.lol, licensed under ODbL: https://opendatacommons.org/licenses/odbl/)",
+      "Flight routes: adsbdb.com — David Taylor & Jim Mason",
+      "Aircraft registrations: adsbdb.com, PlaneBase",
+      "Airports: OurAirports (https://ourairports.com, public domain)"
+    ],
+    "paper_citation": "Matthias Schäfer et al. Bringing Up OpenSky...",
+    "data_notice_url": "https://airline.api.veyino.org/data-notice"
+  }
+}
+        </div>
+      </section>
+
+      <!-- Section 4: Endpoints -->
+      <section id="ep-health" class="doc-section">
+        <h2>API Endpoints Reference</h2>
+
+        <!-- Health -->
+        <div class="endpoint-card">
+          <div class="endpoint-header">
+            <span class="badge-method badge-get">GET</span>
+            <span class="endpoint-path">/api/v1/health</span>
+          </div>
+          <p>Public system health check and upstream poller telemetry status. Does not require an API key.</p>
+          <div class="code-box">curl https://airline.api.veyino.org/api/v1/health</div>
+        </div>
+
+        <!-- Flights -->
+        <div id="ep-flights" class="endpoint-card">
+          <div class="endpoint-header">
+            <span class="badge-method badge-get">GET</span>
+            <span class="endpoint-path">/api/v1/flights</span>
+          </div>
+          <p>Query live tracked flights with geospatial bounding box, altitude filters, callsign, and emergency status.</p>
+          <table class="param-table">
+            <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>bbox</code></td><td>string</td><td>Bounding box filter: <code>minLat,minLon,maxLat,maxLon</code> (e.g. <code>18.0,73.0,54.0,135.0</code> for East Asia)</td></tr>
+              <tr><td><code>callsign</code></td><td>string</td><td>Prefix match for ICAO/IATA callsign (e.g. <code>CSN</code>, <code>AAL</code>)</td></tr>
+              <tr><td><code>hex</code></td><td>string</td><td>Exact 24-bit ICAO aircraft transponder hexadecimal code</td></tr>
+              <tr><td><code>origin</code></td><td>string</td><td>Origin airport ICAO code (e.g. <code>ZBAA</code>, <code>KJFK</code>)</td></tr>
+              <tr><td><code>dest</code></td><td>string</td><td>Destination airport ICAO code (e.g. <code>ZSPD</code>, <code>EGLL</code>)</td></tr>
+              <tr><td><code>emergency</code></td><td>boolean</td><td>Filter for active emergency squawks (<code>true</code> / <code>1</code>)</td></tr>
+              <tr><td><code>diverting</code></td><td>boolean</td><td>Filter for flights with predictive diversion warnings (<code>true</code> / <code>1</code>)</td></tr>
+              <tr><td><code>min_alt</code> / <code>max_alt</code></td><td>number</td><td>Barometric altitude boundaries in feet</td></tr>
+              <tr><td><code>limit</code></td><td>integer</td><td>Results per page (1 to 3000, default: 50)</td></tr>
+              <tr><td><code>page</code></td><td>integer</td><td>Pagination page offset (default: 1)</td></tr>
+              <tr><td><code>sort</code></td><td>string</td><td>Sort field: <code>altitude</code>, <code>speed</code>, <code>last_seen</code></td></tr>
+              <tr><td><code>order</code></td><td>string</td><td>Sort direction: <code>asc</code> or <code>desc</code></td></tr>
+            </tbody>
+          </table>
+          <div class="code-box">
+curl -H "X-API-Key: YOUR_KEY" "https://airline.api.veyino.org/api/v1/flights?bbox=20.0,110.0,40.0,125.0&limit=100"
+          </div>
+        </div>
+
+        <!-- Flight Detail -->
+        <div id="ep-flight-detail" class="endpoint-card">
+          <div class="endpoint-header">
+            <span class="badge-method badge-get">GET</span>
+            <span class="endpoint-path">/api/v1/flights/{identifier}</span>
+          </div>
+          <p>Retrieve full telemetry, route details, and diversion diagnostics for a single aircraft identified by ICAO callsign or hex address.</p>
+          <div class="code-box">curl -H "X-API-Key: YOUR_KEY" https://airline.api.veyino.org/api/v1/flights/CSN3104</div>
+        </div>
+
+        <!-- History -->
+        <div id="ep-history" class="endpoint-card">
+          <div class="endpoint-header">
+            <span class="badge-method badge-get">GET</span>
+            <span class="endpoint-path">/api/v1/history</span>
+            <span style="font-size:12px; color:var(--text-dim);">or <code>/api/v1/flights/{id}/history</code></span>
+          </div>
+          <p>Retrieve historical track trajectory points up to the 90-day retention horizon.</p>
+          <table class="param-table">
+            <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>callsign</code> / <code>hex</code></td><td>string</td><td>Flight callsign or hex transponder address</td></tr>
+              <tr><td><code>from</code> / <code>to</code></td><td>integer</td><td>Unix timestamp epoch bounds (defaults to past 90 days)</td></tr>
+              <tr><td><code>limit</code></td><td>integer</td><td>Maximum historical points (default: 300, max: 2000)</td></tr>
+            </tbody>
+          </table>
+          <div class="code-box">curl -H "X-API-Key: YOUR_KEY" "https://airline.api.veyino.org/api/v1/history?callsign=CSN3104&limit=250"</div>
+        </div>
+
+        <!-- Emergencies & Diversions -->
+        <div id="ep-emergencies" class="endpoint-card">
+          <div class="endpoint-header">
+            <span class="badge-method badge-get">GET</span>
+            <span class="endpoint-path">/api/v1/emergencies</span>
+          </div>
+          <p>Query aircraft actively squawking emergency transponder codes (7700 General, 7600 Radio Failure, 7500 Hijack/Unlawful Interference).</p>
+          <div class="code-box">curl -H "X-API-Key: YOUR_KEY" https://airline.api.veyino.org/api/v1/emergencies</div>
+        </div>
+
+        <div id="ep-diversions" class="endpoint-card">
+          <div class="endpoint-header">
+            <span class="badge-method badge-get">GET</span>
+            <span class="endpoint-path">/api/v1/diversions</span>
+          </div>
+          <p>Query flights flagged by Contrail's algorithmic diversion engine based on heading deviations, premature high-rate descents, or missed approach holds.</p>
+          <div class="code-box">curl -H "X-API-Key: YOUR_KEY" https://airline.api.veyino.org/api/v1/diversions</div>
+        </div>
+
+        <!-- Airports -->
+        <div id="ep-airports" class="endpoint-card">
+          <div class="endpoint-header">
+            <span class="badge-method badge-get">GET</span>
+            <span class="endpoint-path">/api/v1/airports/{code}</span>
+          </div>
+          <p>Lookup aerodrome coordinates, runways, elevation, and active inbound/outbound traffic by ICAO or IATA code.</p>
+          <div class="code-box">curl -H "X-API-Key: YOUR_KEY" https://airline.api.veyino.org/api/v1/airports/ZBAA</div>
+        </div>
+
+        <!-- Global Stats -->
+        <div id="ep-stats" class="endpoint-card">
+          <div class="endpoint-header">
+            <span class="badge-method badge-get">GET</span>
+            <span class="endpoint-path">/api/v1/stats</span>
+          </div>
+          <p>Real-time global counters: total tracked aircraft, active emergencies, predicted diversions, and poller cadence.</p>
+          <div class="code-box">curl -H "X-API-Key: YOUR_KEY" https://airline.api.veyino.org/api/v1/stats</div>
+        </div>
+
+        <!-- Custom Query -->
+        <div id="ep-query" class="endpoint-card">
+          <div class="endpoint-header">
+            <span class="badge-method badge-post">POST</span>
+            <span class="endpoint-path">/api/v1/query</span>
+          </div>
+          <p>Execute structured JSON queries with composite filter criteria and sorting.</p>
+          <div class="code-box">
+curl -X POST -H "Content-Type: application/json" -H "X-API-Key: YOUR_KEY" \
+  https://airline.api.veyino.org/api/v1/query \
+  -d '{
+    "filters": {
+      "bbox": {"min_lat": 20.0, "min_lon": 110.0, "max_lat": 40.0, "max_lon": 125.0},
+      "min_alt": 25000,
+      "max_alt": 42000
+    },
+    "limit": 50,
+    "sort_by": "altitude",
+    "sort_order": "desc"
+  }'
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 5: Core Field Groups -->
+      <section id="schema-groups" class="doc-section">
+        <h2>7 Core Field Groups</h2>
+        <p>Contrail's flight telemetry object is organized into 7 standardized top-level blocks:</p>
+        <table class="param-table">
+          <thead><tr><th>Field Group</th><th>Key Fields</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>flight</code></td><td><code>callsign_icao</code>, <code>callsign_iata</code>, <code>airline</code></td><td>Callsign identity, flight number, and operating carrier</td></tr>
+            <tr><td><code>aircraft</code></td><td><code>hex</code>, <code>registration</code>, <code>type_code</code>, <code>country</code></td><td>Airframe ICAO hex, tail registration, and nationality</td></tr>
+            <tr><td><code>telemetry</code></td><td><code>position</code>, <code>altitude</code>, <code>speed</code>, <code>attitude</code></td><td>Latitude, longitude, barometric/geometric altitude, ground speed, track heading, vertical rate (fpm and mps)</td></tr>
+            <tr><td><code>route</code></td><td><code>origin</code>, <code>destination</code>, <code>waypoints</code></td><td>Departure and arrival aerodromes with coordinates and planned navigation fixes</td></tr>
+            <tr><td><code>emergency</code></td><td><code>is_emergency</code>, <code>squawk</code>, <code>category</code></td><td>Transponder squawk state and emergency alert classification</td></tr>
+            <tr><td><code>diversion_analysis</code></td><td><code>predicted_diversion</code>, <code>probability_level</code>, <code>triggered_criteria</code></td><td>Predictive diversion warning score, criteria flags, and candidate diversion alternates</td></tr>
+            <tr><td><code>metadata</code></td><td><code>upstream_source</code>, <code>last_updated</code></td><td>Sensor network origin and UTC timestamp</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Section 6: Status Codes -->
+      <section id="status-codes" class="doc-section">
+        <h2>HTTP Status Codes</h2>
+        <table class="param-table">
+          <thead><tr><th>Status</th><th>Meaning</th><th>Resolution</th></tr></thead>
+          <tbody>
+            <tr><td><code>200 OK</code></td><td>Success</td><td>Request completed normally</td></tr>
+            <tr><td><code>400 Bad Request</code></td><td>Malformed Request</td><td>Check query parameters (e.g. malformed bbox bounds or negative limits)</td></tr>
+            <tr><td><code>401 Unauthorized</code></td><td>Missing / Invalid API Key</td><td>Provide a valid key via <code>X-API-Key</code> header or <code>?api_key=</code> parameter</td></tr>
+            <tr><td><code>403 Forbidden</code></td><td>Access Suspended</td><td>Account suspended or administrator endpoint accessed without credentials</td></tr>
+            <tr><td><code>404 Not Found</code></td><td>Resource Missing</td><td>Target flight identifier or airport code does not exist</td></tr>
+            <tr><td><code>429 Too Many Requests</code></td><td>Rate Limit Exceeded</td><td>Slow down request cadence; check <code>Retry-After</code> header</td></tr>
+            <tr><td><code>500 Server Error</code></td><td>Internal Error</td><td>Telemetry node error; automated self-healing triggers automatically</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <footer style="border-top: 1px solid var(--border-subtle); padding: 24px; text-align: center; font-size: 13px; color: var(--text-dim); background: var(--bg-card);">
+    Contrail &copy; 2026. Strictly Non-Commercial Use Only. Live positions by The OpenSky Network & adsb.lol.
+  </footer>
+
+</body>
+</html>

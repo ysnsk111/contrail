@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Contrail — Global Flight Telemetry & Radar API</title>
+  <link rel="icon" type="image/png" href="/static/logo.png">
+  
+  <!-- Leaflet CSS & JS for Radar Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="topbar">
+    <div class="brand" onclick="window.location.hash='#home'">
+      <img src="/static/logo.png" alt="Contrail Logo" class="brand-logo">
+      <span class="brand-name">Contrail <span class="brand-badge">v1.0</span></span>
+    </div>
+
+    <!-- Mobile Hamburger Toggle -->
+    <button id="mobile-toggle-btn" class="mobile-menu-btn" aria-label="Toggle navigation">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+
+    <div id="topbar-right-panel" class="topbar-right">
+      <nav class="nav-links">
+        <a class="nav-link" href="#home" data-i18n="nav_home">Home</a>
+        <a class="nav-link" href="/docs" data-i18n="nav_docs">Documentation</a>
+        <a class="nav-link" href="/terms" data-i18n="nav_terms">Terms & Licensing</a>
+        <a class="nav-link" href="#console/overview" data-i18n="nav_console">Console</a>
+      </nav>
+
+      <select id="lang-select" class="lang-select">
+        <option value="en">English (US)</option>
+        <option value="zh">简体中文</option>
+        <option value="ja">日本語</option>
+      </select>
+
+      <div id="unauth-nav" style="display: flex; gap: 10px; align-items: center;">
+        <button id="btn-open-login" class="btn btn-outline" data-i18n="btn_signin">Sign In</button>
+        <button id="btn-open-register" class="btn btn-primary" data-i18n="btn_register">Register</button>
+      </div>
+
+      <div id="auth-nav" style="display: none; gap: 12px; align-items: center;">
+        <span id="user-greeting" style="font-size: 13.5px; font-weight: 500; color: #d1d5db;">User</span>
+        <button id="btn-logout" class="btn btn-sm btn-outline" data-i18n="btn_signout">Sign Out</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- VIEW: LANDING / WELCOME PAGE -->
+  <main id="view-landing" style="display: block;">
+    <section class="hero-container">
+      <div class="hero-pill">
+        <span class="dot"></span>
+        <span data-i18n="hero_pill">Academic & Non-Commercial Flight Telemetry</span>
+      </div>
+      <h1 class="hero-title" data-i18n="hero_title">Global Flight Telemetry & Radar API</h1>
+      <p class="hero-desc" data-i18n="hero_desc">
+        High-precision ADS-B aircraft vectors, route enrichment, transponder emergency tracking (7700/7600/7500), and automated diversion prediction for researchers and developers.
+      </p>
+      <div class="hero-actions">
+        <button id="hero-btn-console" class="btn btn-amber" style="padding: 11px 22px; font-size: 15px;" data-i18n="btn_open_console">Open Console</button>
+        <button id="hero-btn-register" class="btn btn-primary" style="padding: 11px 22px; font-size: 15px;" data-i18n="btn_get_key">Get Free API Key</button>
+        <a href="/docs" class="btn btn-outline" style="padding: 11px 22px; font-size: 15px;" data-i18n="btn_view_docs">Explore Documentation</a>
+      </div>
+    </section>
+
+    <!-- Key Features Grid -->
+    <section class="features-container">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg>
+        </div>
+        <h3 data-i18n="feat_1_title">Live ADS-B Tracking</h3>
+        <p data-i18n="feat_1_desc">Near-real-time transponder kinematics, barometric and geometric altitudes, ground speed, track heading, and vertical rates.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3.5c-.5-.5-2.5 0-4 1.5L13.5 8.5 5.3 6.7c-.8-.2-1.6.1-2.1.7l-.7.7 5.7 3.6-2.5 2.5-2.8-.7-.9.9 2.8 2.1 2.1 2.8.9-.9-.7-2.8 2.5-2.5 3.6 5.7.7-.7c.6-.5.9-1.3.7-2.1z"/></svg>
+        </div>
+        <h3 data-i18n="feat_2_title">Route & Airframe Enrichment</h3>
+        <p data-i18n="feat_2_desc">Automatic ICAO/IATA callsign decoding, origin and destination airport pairing, distance calculations, and airframe classifications.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        </div>
+        <h3 data-i18n="feat_3_title">Emergency Squawk Surveillance</h3>
+        <p data-i18n="feat_3_desc">Instant filtering for squawk 7700 (General Emergency), 7600 (Radio Failure), 7500 (Unlawful Interference) with alert metadata.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+        </div>
+        <h3 data-i18n="feat_4_title">Diversion Prediction Engine</h3>
+        <p data-i18n="feat_4_desc">Algorithmic heading deviation analysis and nearest suitable alternate airport identification for irregular operations.</p>
+      </div>
+    </section>
+
+    <!-- API Documentation Section -->
+    <section id="docs-section" style="max-width: 1080px; margin: 20px auto 60px; padding: 0 20px;">
+      <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 8px;" data-i18n="docs_quickstart_title">API Quickstart & Authentication</h2>
+      <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 14px;" data-i18n="docs_quickstart_desc">
+        All live data endpoints require a provisioned API key passed via the <code>X-API-Key</code> HTTP header or <code>?api_key=</code> query parameter.
+        Rate limits apply per key: <strong>60 RPM</strong>, <strong>1,000 RPH</strong>, and <strong>10,000 requests/day</strong>.
+      </p>
+
+      <div style="background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 20px; margin-bottom: 24px;">
+        <h4 style="font-size: 14px; font-weight: 600; color: var(--accent-amber-light); margin-bottom: 8px;" data-i18n="docs_fetch_flights_title">Fetch Live Flights with API Key:</h4>
+        <div class="code-block">curl -H "X-API-Key: YOUR_API_KEY" "https://airline.api.veyino.org/api/v1/flights?limit=10"</div>
+
+        <h4 style="font-size: 14px; font-weight: 600; color: var(--accent-amber-light); margin-bottom: 8px;" data-i18n="docs_attribution_title">JSON Response Attribution Envelope:</h4>
+        <div class="code-block">{
+  "api_version": "v1.0",
+  "status": "success",
+  "attribution": {
+    "notice": "Strictly Non-Commercial Use Only. Contrail collects and redistributes data as-is...",
+    "sources": [
+      "Live aircraft positions: The OpenSky Network (https://opensky-network.org)",
+      "Live aircraft positions: adsb.lol (https://adsb.lol)",
+      "Flight routes: adsbdb.com — David Taylor & Jim Mason",
+      "Airports: OurAirports (https://ourairports.com)"
+    ],
+    "paper_citation": "Matthias Schäfer et al. 'Bringing Up OpenSky: A Large-scale ADS-B Sensor Network for Research'. IEEE/ACM IPSN 2014.",
+    "data_notice_url": "https://airline.api.veyino.org/data-notice"
+  },
+  "total_records": 1250,
+  "data": [ ... ]
+}</div>
+      </div>
+    </section>
+
+    <!-- Footer & Compliance Notice -->
+    <footer id="compliance-section" class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-compliance-box">
+          <div class="compliance-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: text-bottom; margin-right: 4px;"><path d="M12 3v18M3 7l9-4 9 4M3 7l3 7h-6l3-7zm18 0l3 7h-6l3-7z"></path></svg>
+            <span data-i18n="compliance_header">Data Sources & Mandatory Legal Attribution</span>
+          </div>
+          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 14px;" data-i18n="compliance_intro">
+            Contrail collects and redistributes aviation telemetry as-is under strict non-commercial research terms. All data remains the property of original providers:
+          </p>
+
+          <ul class="data-sources-list">
+            <li>• <span>Live aircraft positions:</span> <a href="https://opensky-network.org" target="_blank" rel="noopener">The OpenSky Network</a></li>
+            <li>• <span>Live aircraft positions:</span> <a href="https://adsb.lol" target="_blank" rel="noopener">adsb.lol</a></li>
+            <li>• <span>Flight routes:</span> <a href="https://adsbdb.com" target="_blank" rel="noopener">adsbdb.com</a> (David Taylor &amp; Jim Mason)</li>
+            <li>• <span>Aircraft data:</span> <a href="https://adsbdb.com" target="_blank" rel="noopener">PlaneBase &amp; adsbdb</a></li>
+            <li>• <span>Airports:</span> <a href="https://ourairports.com" target="_blank" rel="noopener">OurAirports</a> (Public Domain)</li>
+          </ul>
+
+          <div style="margin-top: 16px;">
+            <span style="font-weight: 600; color: #d1d5db; font-size: 12.5px;" data-i18n="opensky_citation_label">OpenSky Network Mandatory Research Paper Citation:</span>
+            <div class="citation-quote">
+Matthias Schäfer, Martin Strohmeier, Vincent Lenders, Ivan Martinovic and Matthias Wilhelm.
+"Bringing Up OpenSky: A Large-scale ADS-B Sensor Network for Research".
+In Proceedings of the 13th IEEE/ACM International Symposium on Information Processing in Sensor Networks (IPSN), pages 83-94, April 2014.
+            </div>
+          </div>
+
+          <p class="notice-disclaimer">
+            Contrail only collects and redistributes this data as-is. All data remains the property of its providers and is subject to their terms.
+            <strong>Non-commercial use only. Not for navigation or safety-of-life use.</strong>
+            Full notice: <a href="/data-notice" style="color: var(--accent-blue); text-decoration: underline;">DATA_NOTICE</a>.
+            <br>
+            <span style="color: #fca5a5;" data-i18n="notice_no_commercial">
+              Commercial use is strictly prohibited by upstream data sources. Do not apply for commercial projects. Commercial users must seek authorization directly from each data provider.
+            </span>
+          </p>
+        </div>
+
+        <div class="footer-bottom">
+          <span data-i18n="footer_rights">Contrail API • All rights reserved • Contact: team@veyino.org</span>
+          <span>Domain: <code>airline.api.veyino.org</code></span>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- VIEW: CONSOLE / DASHBOARD SPA -->
+  <div id="view-console" class="app-container" style="display: none;">
+    <!-- Desktop Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-nav">
+        <div class="sidebar-item active" data-tab="overview">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+          <span data-i18n="side_overview">Live Radar & Stats</span>
+        </div>
+        <div class="sidebar-item" data-tab="keys">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M21 2l-2 2m-1.5 1.5L14 9l-1.5-1.5-2 2 1.5 1.5-4 4A6 6 0 1 1 5 11l4-4 1.5 1.5 2-2L11 5l3.5-3.5L21 2z"></path></svg>
+          <span data-i18n="side_keys">API Keys</span>
+        </div>
+        <div class="sidebar-item" data-tab="docs">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          <span data-i18n="side_docs">API Documentation</span>
+        </div>
+        <div class="sidebar-item" data-tab="security">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          <span data-i18n="side_security">Security & Licensing</span>
+        </div>
+        <div class="sidebar-item" data-tab="support">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          <span data-i18n="side_support">Contact Support</span>
+        </div>
+        <div id="admin-sidebar-item" class="sidebar-item" data-tab="admin" style="display: none; color: var(--accent-violet);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          <span data-i18n="side_admin">Admin Console</span>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <div>Contrail v1.0 Production</div>
+        <div style="color: var(--text-muted); font-size: 11px; margin-top: 4px;">airline.api.veyino.org</div>
+      </div>
+    </aside>
+
+    <!-- Mobile Console Navigation Pills -->
+    <nav class="mobile-console-bar">
+      <div class="mobile-console-pill active" data-tab="overview">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+        <span data-i18n="side_overview">Live Radar</span>
+      </div>
+      <div class="mobile-console-pill" data-tab="keys">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;"><path d="M21 2l-2 2m-1.5 1.5L14 9l-1.5-1.5-2 2 1.5 1.5-4 4A6 6 0 1 1 5 11l4-4 1.5 1.5 2-2L11 5l3.5-3.5L21 2z"></path></svg>
+        <span data-i18n="side_keys">API Keys</span>
+      </div>
+      <div class="mobile-console-pill" data-tab="docs">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+        <span data-i18n="side_docs">Docs</span>
+      </div>
+      <div class="mobile-console-pill" data-tab="security">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        <span data-i18n="side_security">Security</span>
+      </div>
+      <div class="mobile-console-pill" data-tab="support">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <span data-i18n="side_support">Support</span>
+      </div>
+      <div id="mobile-admin-tab" class="mobile-console-pill" data-tab="admin" style="display: none; color: #c4b5fd;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <span data-i18n="side_admin">Admin</span>
+      </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- TAB 1: OVERVIEW & RADAR -->
+      <section id="tab-overview" class="console-tab-content">
+        <!-- Upstream Cooldown Paused Notification Banner -->
+        <div id="upstream-paused-banner" style="display: none; background: rgba(30, 41, 59, 0.95); border: 1px solid #475569; border-left: 4px solid #f59e0b; padding: 12px 18px; border-radius: 8px; margin-bottom: 16px; color: #f1f5f9; font-size: 13px; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <span id="upstream-paused-text" style="font-weight: 600;">实时数据暂停，预计 --:-- 恢复</span>
+          </div>
+          <span style="font-size: 11px; color: #94a3b8;">上游限额保护模式生效中 &bull; 保留最后已知航迹与航位推算</span>
+        </div>
+
+        <div class="stats-cards-grid">
+          <div class="stat-card">
+            <div class="stat-label" data-i18n="stat_total_tracked">Live Aircraft Tracked</div>
+            <div id="stat-val-tracked" class="stat-value">--</div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
+              <span data-i18n="stat_observed">Observed</span>: <span id="stat-val-observed">--</span> &bull; 
+              <span data-i18n="stat_estimated">Estimated</span>: <span id="stat-val-estimated">--</span> &bull; 
+              <span data-i18n="stat_stale">Stale</span>: <span id="stat-val-stale">--</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label" data-i18n="stat_emergencies">Active Emergencies</div>
+            <div id="stat-val-emergencies" class="stat-value" style="color: #ef4444;">--</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label" data-i18n="stat_diverting">Diverting Predictions</div>
+            <div id="stat-val-diverting" class="stat-value" style="color: #f59e0b;">--</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label" data-i18n="stat_today_req">Your Today Requests</div>
+            <div id="stat-val-today-req" class="stat-value">--</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label" data-i18n="stat_quota">Daily Quota</div>
+            <div id="stat-val-quota" class="stat-value" style="font-size: 19px;">-- / 10,000</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label" data-i18n="stat_rpm">Current Rate (RPM)</div>
+            <div id="stat-val-rpm" class="stat-value" style="font-size: 19px;">-- / 60</div>
+          </div>
+        </div>
+
+        <div class="map-container-wrap">
+          <div class="map-header">
+            <div class="map-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: text-bottom; margin-right: 6px;"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3.5c-.5-.5-2.5 0-4 1.5L13.5 8.5 5.3 6.7c-.8-.2-1.6.1-2.1.7l-.7.7 5.7 3.6-2.5 2.5-2.8-.7-.9.9 2.8 2.1 2.1 2.8.9-.9-.7-2.8 2.5-2.5 3.6 5.7.7-.7c.6-.5.9-1.3.7-2.1z"/></svg>
+              <span data-i18n="map_title">Real-Time Global Flight Radar</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <div class="map-filters">
+                <button class="btn btn-sm btn-amber map-filter-btn" data-filter="all" data-i18n="filter_all">All Flights</button>
+                <button class="btn btn-sm btn-outline map-filter-btn" data-filter="emergencies" data-i18n="filter_emergencies">Emergencies Only</button>
+                <button class="btn btn-sm btn-outline map-filter-btn" data-filter="diverting" data-i18n="filter_diverting">Diverting Only</button>
+              </div>
+              <div style="display: flex; align-items: center; gap: 4px;">
+                <input id="input-map-search-track" type="text" placeholder="Callsign or Hex..." style="background: var(--bg-card); border: 1px solid var(--border-subtle); color: var(--text-main); font-size: 12px; padding: 5px 8px; border-radius: var(--radius-sm); width: 140px;">
+                <button id="btn-map-search-track" class="btn btn-sm btn-outline" style="padding: 5px 10px; font-size: 12px;">Track</button>
+                <button id="btn-clear-track" class="btn btn-sm btn-outline" style="padding: 5px 8px; font-size: 12px; display: none;" title="Clear Active Track">Clear</button>
+              </div>
+            </div>
+          </div>
+          <div id="flight-radar-map"></div>
+        </div>
+      </section>
+
+      <!-- TAB 2: API KEYS -->
+      <section id="tab-keys" class="console-tab-content" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <h2 style="font-size: 20px; font-weight: 700;" data-i18n="key_list_title">Provisioned API Keys</h2>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;" data-i18n="key_list_desc">
+              Manage your personal authentication tokens. Each key is subject to non-commercial rate limits (60 RPM / 10,000 Daily).
+            </p>
+          </div>
+          <button id="btn-open-create-key" class="btn btn-amber" data-i18n="btn_gen_key">+ Generate New Key</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th data-i18n="col_name">Key Name</th>
+                <th data-i18n="col_prefix">Key Prefix</th>
+                <th data-i18n="col_created">Created</th>
+                <th data-i18n="col_last_used">Last Used</th>
+                <th data-i18n="col_today">Today Calls</th>
+                <th data-i18n="col_total">Total Calls</th>
+                <th data-i18n="col_status">Status</th>
+                <th data-i18n="col_actions">Action</th>
+              </tr>
+            </thead>
+            <tbody id="keys-table-body">
+              <tr><td colspan="8" style="text-align:center; padding: 20px;">Loading keys...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- TAB 3: API DOCS -->
+      <section id="tab-docs" class="console-tab-content" style="display: none;">
+        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 14px;" data-i18n="docs_console_title">Contrail API Endpoints Reference</h2>
+        
+        <div style="background: var(--bg-secondary); border:1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 18px; margin-bottom: 18px;">
+          <h3 style="font-size: 15px; font-weight: 600; color: #60a5fa; margin-bottom: 6px;">GET /api/v1/flights</h3>
+          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 10px;" data-i18n="docs_endpoint_flights_desc">Query live aircraft vectors with filters (callsign, hex, squawk, origin, dest, bbox, emergency, diverting).</p>
+          <div class="code-block">curl -H "X-API-Key: YOUR_KEY" "https://airline.api.veyino.org/api/v1/flights?limit=20&emergency=true"</div>
+        </div>
+
+        <div style="background: var(--bg-secondary); border:1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 18px; margin-bottom: 18px;">
+          <h3 style="font-size: 15px; font-weight: 600; color: #60a5fa; margin-bottom: 6px;">GET /api/v1/emergencies</h3>
+          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 10px;" data-i18n="docs_endpoint_emergencies_desc">Stream live emergency aircraft broadcasting squawk 7700, 7600, or 7500.</p>
+          <div class="code-block">curl -H "X-API-Key: YOUR_KEY" "https://airline.api.veyino.org/api/v1/emergencies"</div>
+        </div>
+
+        <div style="background: var(--bg-secondary); border:1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 18px; margin-bottom: 18px;">
+          <h3 style="font-size: 15px; font-weight: 600; color: #60a5fa; margin-bottom: 6px;">GET /api/v1/diversions</h3>
+          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 10px;" data-i18n="docs_endpoint_diversions_desc">Retrieve flights algorithmically flagged as deviating from destination trajectory.</p>
+          <div class="code-block">curl -H "X-API-Key: YOUR_KEY" "https://airline.api.veyino.org/api/v1/diversions"</div>
+        </div>
+
+        <div style="background: var(--bg-secondary); border:1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 18px; margin-bottom: 18px;">
+          <h3 style="font-size: 15px; font-weight: 600; color: #60a5fa; margin-bottom: 6px;">POST /api/v1/query</h3>
+          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 10px;" data-i18n="docs_endpoint_query_desc">Custom JSON query engine supporting complex geospatial and altitude filtering.</p>
+          <div class="code-block">curl -X POST -H "X-API-Key: YOUR_KEY" -H "Content-Type: application/json" \
+  -d '{"filters":{"min_altitude_ft":30000,"origin_icao":"ZSPD"},"limit":10}' \
+  "https://airline.api.veyino.org/api/v1/query"</div>
+        </div>
+      </section>
+
+      <!-- TAB 4: SECURITY & LICENSING -->
+      <section id="tab-security" class="console-tab-content" style="display: none;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+          <!-- Password modification -->
+          <div style="background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 22px;">
+            <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 14px;" data-i18n="sec_change_password">Change Account Password</h3>
+            <form id="form-change-password">
+              <div class="form-group">
+                <label class="form-label" data-i18n="lbl_current_password">Current Password</label>
+                <input type="password" id="pwd-old" class="form-input" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" data-i18n="lbl_new_password">New Password</label>
+                <input type="password" id="pwd-new" class="form-input" required minlength="8">
+              </div>
+              <div class="form-group">
+                <label class="form-label" data-i18n="lbl_confirm_new_password">Confirm New Password</label>
+                <input type="password" id="pwd-new-confirm" class="form-input" required minlength="8">
+              </div>
+              <button type="submit" class="btn btn-primary" style="width: 100%;" data-i18n="btn_update_password">Update Password</button>
+            </form>
+          </div>
+
+          <!-- License Terms -->
+          <div style="background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 22px;">
+            <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 12px;" data-i18n="terms_title">Contrail API Terms of Service</h3>
+            <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+              <p data-i18n="terms_item_1">1. Strictly Non-Commercial: Learning, research, and personal hobby projects only. No reselling, commercial monetization, or advertising integration.</p>
+              <p style="margin-top:6px;" data-i18n="terms_item_2">2. Attribution Retention: Must preserve upstream attribution metadata (attribution & source fields) in any public presentation.</p>
+              <p style="margin-top:6px;" data-i18n="terms_item_3">3. No Bulk Mirroring: Mass scraping to construct competing commercial databases is prohibited.</p>
+              <p style="margin-top:6px;" data-i18n="terms_item_4">4. No Navigation/Safety Use: Unofficial data, not for flight planning or ATC decisions.</p>
+              <p style="margin-top:6px;" data-i18n="terms_item_5">5. Revocation: Keys violating terms will be throttled or permanently revoked.</p>
+              <p style="margin-top:6px;" data-i18n="terms_item_6">6. Commercial Licensing: Upstream providers do not permit commercial redistribution. Inquire directly with OpenSky, adsb.lol, PlaneBase.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: CONTACT SUPPORT -->
+      <section id="tab-support" class="console-tab-content" style="display: none;">
+        <div style="max-width: 600px; background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 24px;">
+          <h2 style="font-size: 19px; font-weight: 700; margin-bottom: 8px;" data-i18n="support_title">Contrail Technical Support</h2>
+          <p style="font-size: 13.5px; color: var(--text-secondary); margin-bottom: 18px;" data-i18n="support_desc">
+            For upstream compliance inquiries, academic collaborations, or infrastructure support, please contact:
+          </p>
+          <div style="background: var(--bg-primary); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 18px;">
+            <div style="font-size: 12px; color: var(--text-muted);" data-i18n="lbl_direct_email">Direct Email Contact:</div>
+            <div style="font-size: 17px; font-weight: 700; color: var(--accent-amber-light); margin-top: 4px;">team@veyino.org</div>
+          </div>
+          <a href="mailto:team@veyino.org?subject=Contrail%20API%20Inquiry" class="btn btn-amber" style="width: 100%;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: text-bottom; margin-right: 6px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            <span data-i18n="btn_send_email">Send Email to team@veyino.org</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- TAB 6: ADMIN CONSOLE -->
+      <section id="tab-admin" class="console-tab-content" style="display: none;">
+        <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 16px; color: var(--accent-violet);" data-i18n="admin_panel_title">Administrator Control Panel</h2>
+
+        <!-- Registration Channel Control -->
+        <div style="background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 22px; margin-bottom: 22px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+            <div>
+              <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 6px;" data-i18n="admin_reg_title">User Registration Channel</h3>
+              <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 0;" data-i18n="admin_reg_desc">
+                When enabled, registration flow operates normally. When disabled, verification request emails contain only a channel closure notice without any verification code.
+              </p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span id="admin-reg-status-badge" class="badge" style="font-size: 13px; padding: 6px 14px; background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);">Enabled</span>
+              <button id="btn-toggle-registration" class="btn btn-outline" style="min-width: 140px;" data-i18n="btn_toggle_registration">Disable Channel</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Field Restrictions Control -->
+        <div style="background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 22px; margin-bottom: 22px;">
+          <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 6px;" data-i18n="admin_field_title">Normal Users API Field Restrictions</h3>
+          <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;" data-i18n="admin_field_desc">
+            Configure which top-level flight fields are returned to regular API users. (Admin keys always return 100% full fields).
+          </p>
+          <div style="display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 18px;">
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 13px;">
+              <input type="checkbox" class="admin-field-chk" value="flight" checked> <code>flight</code>
+            </label>
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 13px;">
+              <input type="checkbox" class="admin-field-chk" value="aircraft" checked> <code>aircraft</code>
+            </label>
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 13px;">
+              <input type="checkbox" class="admin-field-chk" value="telemetry" checked> <code>telemetry</code>
+            </label>
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 13px;">
+              <input type="checkbox" class="admin-field-chk" value="route" checked> <code>route</code>
+            </label>
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 13px;">
+              <input type="checkbox" class="admin-field-chk" value="emergency" checked> <code>emergency</code>
+            </label>
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 13px;">
+              <input type="checkbox" class="admin-field-chk" value="diversion_analysis" checked> <code>diversion_analysis</code>
+            </label>
+            <label style="display: flex; align-items: center; gap: 6px; font-size: 13px;">
+              <input type="checkbox" class="admin-field-chk" value="metadata" checked> <code>metadata</code>
+            </label>
+          </div>
+          <button id="btn-save-field-restrictions" class="btn btn-amber" data-i18n="btn_save_fields">Save Field Restrictions</button>
+        </div>
+
+        <!-- User Management Table -->
+        <div style="margin-bottom: 22px;">
+          <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 12px;" data-i18n="admin_users_title">Registered Users Management</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th data-i18n="col_admin_name">Name / Org</th>
+                  <th data-i18n="col_admin_email">Email</th>
+                  <th data-i18n="col_admin_purpose">Purpose</th>
+                  <th data-i18n="col_admin_role">Role</th>
+                  <th data-i18n="col_admin_status">Status</th>
+                  <th data-i18n="col_admin_registered">Registered</th>
+                  <th data-i18n="col_admin_actions">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="admin-users-table-body">
+                <tr><td colspan="7" style="text-align: center; padding: 20px;">Loading users...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Rate Limit Alerts Dispatch Log -->
+        <div>
+          <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 12px;" data-i18n="admin_system_title">System Rate Limit Abuse Warning Logs</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th data-i18n="col_alert_email">User Email</th>
+                  <th data-i18n="col_alert_prefix">Key Prefix</th>
+                  <th data-i18n="col_alert_reason">Abuse Reason</th>
+                  <th data-i18n="col_alert_time">Timestamp</th>
+                  <th data-i18n="col_alert_status">Status</th>
+                </tr>
+              </thead>
+              <tbody id="admin-alerts-table-body">
+                <tr><td colspan="5" style="text-align: center; padding: 20px;">Loading alerts...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Upstream Telemetry Provider Status -->
+        <div style="margin-top: 32px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+            <div>
+              <h3 style="font-size: 15px; font-weight: 600; margin: 0 0 4px 0;" data-i18n="admin_upstream_status_title">Upstream Telemetry Status</h3>
+              <p style="font-size: 12px; color: var(--text-secondary); margin: 0;" data-i18n="admin_upstream_status_desc">Real-time scheduling state, rate-limit budgets, cooldown intervals, and fetch metrics.</p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <input type="email" id="input-test-alert-email" class="form-input" placeholder="Recipient email..." value="" style="padding: 5px 8px; font-size: 12px; width: 170px;">
+              <button id="btn-send-test-alert" class="btn btn-sm btn-outline">发送测试邮件</button>
+              <button id="btn-refresh-upstream-status" class="btn btn-sm btn-outline" data-i18n="btn_refresh_status">Refresh Status</button>
+            </div>
+          </div>
+          <div id="test-alert-status-msg" style="display: none; font-size: 12px; padding: 6px 12px; border-radius: 4px; margin-bottom: 12px;"></div>
+          <div id="upstream-status-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+            <!-- Rendered dynamically by JS -->
+          </div>
+        </div>
+
+        <!-- Upstream Telemetry Fetch Logs -->
+        <div style="margin-top: 32px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+            <div>
+              <h3 style="font-size: 15px; font-weight: 600; margin: 0 0 4px 0;" data-i18n="admin_upstream_title">Upstream Telemetry Fetch Logs</h3>
+              <p style="font-size: 12px; color: var(--text-secondary); margin: 0;" data-i18n="admin_upstream_desc">Real-time status, payload size, and latency logs for upstream aviation data providers.</p>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+              <select id="select-upstream-provider" class="form-input" style="padding: 5px 8px; font-size: 12px; width: auto;">
+                <option value="" data-i18n="opt_all_providers">All Providers</option>
+                <option value="opensky">OpenSky</option>
+                <option value="adsb_mesh">ADSB Mesh</option>
+              </select>
+              <select id="select-upstream-status" class="form-input" style="padding: 5px 8px; font-size: 12px; width: auto;">
+                <option value="" data-i18n="opt_all_statuses">All Statuses</option>
+                <option value="success" data-i18n="opt_status_success">Success (200)</option>
+                <option value="rate_limited" data-i18n="opt_status_rate_limited">Rate Limited (429)</option>
+                <option value="error" data-i18n="opt_status_error">Error (Non-200)</option>
+              </select>
+              <input type="text" id="input-upstream-hub" class="form-input" placeholder="Filter Hub..." data-i18n-ph="ph_filter_hub" style="padding: 5px 8px; font-size: 12px; width: 120px;">
+              <button id="btn-refresh-upstream-logs" class="btn btn-sm btn-outline" data-i18n="btn_refresh_logs">Refresh Logs</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th data-i18n="col_upstream_time">Timestamp</th>
+                  <th data-i18n="col_upstream_provider">Provider</th>
+                  <th data-i18n="col_upstream_hub">Hub</th>
+                  <th data-i18n="col_upstream_status">Status</th>
+                  <th data-i18n="col_upstream_code">HTTP Code</th>
+                  <th data-i18n="col_upstream_count">Aircraft Fetched</th>
+                  <th data-i18n="col_upstream_latency">Duration</th>
+                  <th data-i18n="col_upstream_msg">Details / Notes</th>
+                </tr>
+              </thead>
+              <tbody id="admin-upstream-table-body">
+                <tr><td colspan="8" style="text-align: center; padding: 20px;">Loading upstream fetch logs...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODALS -->
+
+  <!-- Modal: Login -->
+  <div id="modal-login" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" data-i18n="modal_login_title">Sign in to Contrail Console</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <form id="form-login">
+        <div class="form-group">
+          <label class="form-label" data-i18n="lbl_email">Email Address</label>
+          <input type="email" id="login-email" class="form-input" required placeholder="user@example.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="lbl_password">Password</label>
+          <input type="password" id="login-password" class="form-input" required>
+        </div>
+        <div class="form-group" style="margin-top: 15px; margin-bottom: 5px;">
+          <cap-widget id="login-cap" data-cap-api-endpoint="/cap/b12b141f33/" data-cap-lang="en"></cap-widget>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;" data-i18n="btn_signin">Sign In</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Register -->
+  <div id="modal-register" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" data-i18n="modal_reg_title">Register for Contrail API Access</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <form id="form-register">
+        <div class="form-group">
+          <label class="form-label" data-i18n="lbl_name_org">Name or Organization</label>
+          <input type="text" id="reg-name" class="form-input" required placeholder="e.g. Aeronautics Lab">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="lbl_email">Email Address</label>
+          <input type="email" id="reg-email" class="form-input" required placeholder="you@university.edu">
+        </div>
+
+        <!-- Self-Hosted Advanced Cap PoW Verification -->
+        <div class="form-group" style="margin-top: 15px; margin-bottom: 10px;">
+          <cap-widget id="reg-cap" data-cap-api-endpoint="/cap/b12b141f33/" data-cap-lang="en"></cap-widget>
+        </div>
+
+        <!-- Verification Code Section -->
+        <div class="form-group">
+          <label class="form-label" data-i18n="lbl_verif_code">Email Verification Code</label>
+          <div class="form-row">
+            <input type="text" id="reg-code" class="form-input" placeholder="6-digit code" required maxlength="6" style="flex: 1;">
+            <button type="button" id="btn-send-code" class="btn btn-outline" style="white-space: nowrap;" data-i18n="btn_send_code">Send Code</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="lbl_password">Password</label>
+          <input type="password" id="reg-password" class="form-input" required minlength="8">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="lbl_confirm_password">Confirm Password</label>
+          <input type="password" id="reg-confirm-password" class="form-input" required minlength="8">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="lbl_purpose">One-sentence Use Case</label>
+          <input type="text" id="reg-purpose" class="form-input" required placeholder="e.g. Academic research on flight diversion rates">
+        </div>
+
+        <div class="commercial-warning" data-i18n="notice_no_commercial">
+          Notice: Commercial use is strictly prohibited by upstream providers. Do not apply for commercial projects. Commercial users must seek authorization directly from each data provider.
+        </div>
+
+        <label class="form-checkbox">
+          <input type="checkbox" id="reg-agree" required>
+          <span data-i18n="chk_agree_terms">I agree to the Terms of Service and strictly non-commercial use.</span>
+        </label>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%;" data-i18n="btn_register">Create Account</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Create Key -->
+  <div id="modal-create-key" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" data-i18n="btn_gen_key">Generate New API Key</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <form id="form-create-key">
+        <div class="form-group">
+          <label class="form-label" data-i18n="lbl_key_name">Key Name / Description</label>
+          <input type="text" id="create-key-name" class="form-input" required placeholder="e.g. Trajectory Prediction Server" data-i18n-ph="ph_key_name">
+        </div>
+
+        <div class="commercial-warning">
+          <strong data-i18n="lbl_compliance_cert_title">Mandatory Compliance Certification:</strong><br>
+          <span data-i18n="key_agreement_prompt">Before creating an API key, you must certify that this key will only be used for personal, academic, or non-commercial research projects. Upstream source attribution must accompany any downstream presentation.</span>
+        </div>
+
+        <label class="form-checkbox">
+          <input type="checkbox" id="create-key-agree" required>
+          <span data-i18n="chk_key_certify">I certify that this key will only be used for personal, academic, and non-commercial research purposes in full compliance with upstream terms.</span>
+        </label>
+
+        <button type="submit" class="btn btn-amber" style="width: 100%;" data-i18n="btn_agree_gen_key">Agree &amp; Generate Key</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Reveal Raw Key -->
+  <div id="modal-show-key" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color: #10b981;" data-i18n="modal_key_success_title">API Key Generated Successfully</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <p style="font-size: 13.5px; color: var(--text-secondary);" data-i18n="msg_key_created">
+        Your new API Key has been generated. Please copy and store it securely; it will not be shown again:
+      </p>
+      <div id="created-key-container"></div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/static/cap.js"></script>
+  <script src="/static/i18n.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

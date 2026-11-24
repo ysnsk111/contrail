@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Terms of Service & Data Compliance — Contrail API</title>
+  <link rel="icon" type="image/png" href="/static/logo.png">
+  <link rel="stylesheet" href="/static/app.css">
+  <style>
+    :root {
+      --bg-primary: #090a0d;
+      --bg-card: #111317;
+      --bg-card-subtle: #16181f;
+      --border-subtle: #242731;
+      --border-focus: #3b82f6;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --text-dim: #6b7280;
+      --accent-blue: #3b82f6;
+      --accent-amber: #d97706;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", "Helvetica Neue", sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .terms-header {
+      border-bottom: 1px solid var(--border-subtle);
+      background: rgba(9, 10, 13, 0.9);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding: 14px 24px;
+    }
+
+    .terms-header-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      padding: 7px 14px;
+      border-radius: var(--radius-sm);
+      transition: all 0.15s ease;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      color: var(--text-main);
+      border-color: #4b5563;
+      background: var(--bg-card-subtle);
+    }
+
+    .terms-container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 36px 24px 64px 24px;
+      flex: 1;
+      width: 100%;
+    }
+
+    .terms-title {
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .terms-subtitle {
+      font-size: 15px;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+    }
+
+    .lang-tabs {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 12px;
+      margin-bottom: 28px;
+    }
+
+    .lang-tab {
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      transition: all 0.15s ease;
+    }
+
+    .lang-tab:hover {
+      color: var(--text-main);
+      background: var(--bg-card);
+    }
+
+    .lang-tab.active {
+      color: #ffffff;
+      background: var(--bg-card);
+      border-color: var(--border-subtle);
+    }
+
+    .term-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 22px;
+      margin-bottom: 20px;
+    }
+
+    .term-number {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+
+    .term-box h3 {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--text-main);
+    }
+
+    .term-box p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 0;
+      line-height: 1.6;
+    }
+
+    .citation-box {
+      background: #000000;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12.5px;
+      color: #d1d5db;
+      position: relative;
+      margin-top: 14px;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 11px;
+      padding: 4px 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .copy-btn:hover {
+      color: var(--text-main);
+      border-color: #4b5563;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="terms-header">
+    <div class="terms-header-inner">
+      <div style="display:flex; align-items:center; gap:16px;">
+        <a href="/" class="back-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Back to Contrail
+        </a>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <img src="/static/logo.png" alt="Contrail Logo" style="width:24px; height:24px; border-radius:4px;">
+          <span style="font-weight:600; font-size:15px; letter-spacing:-0.01em;">Terms of Service & Compliance</span>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <a href="/docs" class="back-btn" style="padding: 6px 12px; font-size: 13px;">API Docs</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="terms-container">
+    <h1 class="terms-title">Contrail API Terms of Service</h1>
+    <p class="terms-subtitle">
+      Effective Date: November 2026 &bull; Mandatory acceptable use policy and upstream attribution requirements.
+    </p>
+
+    <!-- Language Selector Tabs -->
+    <div class="lang-tabs">
+      <button class="lang-tab active" onclick="switchTermsLang('en')">English</button>
+      <button class="lang-tab" onclick="switchTermsLang('zh')">简体中文</button>
+      <button class="lang-tab" onclick="switchTermsLang('ja')">日本語</button>
+    </div>
+
+    <!-- English Terms -->
+    <div id="terms-en" class="terms-lang-panel">
+      <div class="term-box">
+        <span class="term-number">Article 1</span>
+        <h3>Strictly Non-Commercial Use Only</h3>
+        <p>
+          Contrail API is provided exclusively for non-commercial purposes, including individual study, academic research, open-source utilities, and personal hobby projects. You may not resell, sub-license, repackage, or incorporate this data into any commercial, revenue-generating, subscription-based, or ad-monetized product or service. Commercial applications are not permitted; prospective commercial users must apply for direct licenses from the upstream data providers.
+        </p>
+      </div>
+
+      <div class="term-box">
+        <span class="term-number">Article 2</span>
+        <h3>Mandatory Attribution Retention</h3>
+        <p>
+          When publicly displaying, redistributing, or forwarding data obtained through this API, you must preserve and display the upstream source attribution (as returned in the <code>attribution</code> envelope of each response).
+        </p>
+      </div>
+
+      <div class="term-box">
+        <span class="term-number">Article 3</span>
+        <h3>Prohibition of Substitute Database Scraping</h3>
+        <p>
+          Automated batch scraping for the purpose of creating a competing public telemetry mirror or substitute database is strictly prohibited.
+        </p>
+      </div>
+
+      <div class="term-box">
+        <span class="term-number">Article 4</span>
+        <h3>Unofficial Data & Non-Navigation Disclaimer</h3>
+        <p>
+          All flight tracking data is unofficial and provided on an "as-is" basis without warranties of any kind. Telemetry may be delayed, intermittent, or subject to sensor anomalies. This service must <strong>never</strong> be used for actual aircraft navigation, air traffic control, or safety-of-life decisions.
+        </p>
+      </div>
+
+      <div class="term-box">
+        <span class="term-number">Article 5</span>
+        <h3>Rate Limiting & Revocation Rights</h3>
+        <p>
+          Contrail reserves the right to apply rate limiting, suspend accounts, or revoke API keys at any time without prior notice in the event of terms violations, commercial abuse, or abusive traffic patterns.
+        </p>
+      </div>
+
+      <div class="term-box">
+        <span class="term-number">Article 6</span>
+        <h3>Upstream Intellectual Property & Academic Citation</h3>
+        <p>
+          All live state vectors, route tables, and airport identifiers remain the property of their respective providers. When citing telemetry derived from The OpenSky Network in academic literature, you must include the following reference:
+        </p>
+        <div class="citation-box">
+          <button class="copy-btn" onclick="copyCitation()">Copy BibTeX</button>
+          Matthias Schäfer, Martin Strohmeier, Vincent Lenders, Ivan Martinovic and Matthias Wilhelm. "Bringing Up OpenSky: A Large-scale ADS-B Sensor Network for Research". In Proceedings of the 13th IEEE/ACM International Symposium on Information Processing in Sensor Networks (IPSN), pages 83-94, April 2014.
+        </div>
+      </div>
+    </div>
+
+    <!-- Simplified Chinese Terms -->
+    <div id="terms-zh" class="terms-lang-panel" style="display:none;">
+      <div class="term-box">
+        <span class="term-number">第一条</span>
+        <h3>仅限非商业用途</h3>
+        <p>
+          Contrail API 仅限非商业用途（学习、学术研究、个人爱好项目及开源工具）。严禁出售、转授权数据，严禁将数据用于任何收费、营利性、订阅制产品、商业服务或广告变现。商业用途不开放申请；商业用户请直接向各数据源提供方申请官方商业授权。
+        </p>
+      </div>
+
+      <div class="term-box">
+        <span class="term-number">第二条</span>
+        <h3>必须保留数据来源署名</h3>
+        <p>
+          公开展示、分发或转发来自本 API 的数据时，必须保留并展示数据来源署名（见每个响应中的 <code>attribution</code> 字段）。
+        </p>
+      </div>
+
+      <div class="term-box">
+        <span class="term-number">第三条</span>
+        <h3>严禁抓取替代数据库</h3>
+        <p>
+          严禁使用自动化脚本批量高频抓取数据后组建替代性数据库或镜像平台对外提供。
+        </p>
+      </div>
+
+      <div class="term-box">
+        <span class="term-number">第四条</span>
+        <h3>非官方数据与免责声明</h3>
+        <p>
+          本服务数据为非官方数据，按“现状”提供，可能存在延迟或传感器误差。严禁用于航空导航、空中交通管制或任何涉及生命安全的决策。
+        </p>
+      </div>
+
+      <div class="term-box">
+        <span class="term-number">第五条</span>
+        <h3>限流与吊销机制</h3>
+        <p>
+          如发现任何违反本使用条款、滥用调用或用于商业目的的行为，我们有权随时对该 API Key 或账户进行限制频率、封禁或一键吊销。
+        </p>
+      </div>
+
+      <div class="term-box">
+        <span class="term-number">第六条</span>
+        <h3>上游数据源知识产权与论文引用</h3>
+        <p>
+          数据权利归各原始提供方所有。如在学术论文或科研项目中使用了来自 The OpenSky Network 的数据，必须按规定引用以下学术论文：
+        </p>
+        <div class="citation-box">
+          <button class="copy-btn" onclick="copyCitation()">复制 BibTeX</button>
+          Matthias Schäfer, Martin Strohmeier, Vincent Lenders, Ivan Martinovic and Matthias Wilhelm. "Bringing Up OpenSky: A Large-scale ADS-B Sensor Network for Research". In Proceedings of the 13th IEEE/ACM International Symposium on Information Processing in Sensor Networks (IPSN), pages 83-94, April 2014.
+        </div>
+      </div>
+    </div>
+
+    <!-- Japanese Terms -->
+    <div id="terms-ja" class="terms-lang-panel" style="display:none;">
+      <div class="term-box">
+        <span class="term-number">第1条</span>
+        <h3>非商用目的の利用に限定</h3>
+        <p>
+          Contrail API は学習、学術研究、個人プロジェクトなど非商用目的のみに提供されます。データの転売、再ライセンス、有料サービスへの組み込み、広告収益化は禁止されています。商用利用を希望される場合は各データ提供元に直接お問い合わせください。
+        </p>
+      </div>
+
+      <div class="term-box">
+        <span class="term-number">第2条</span>
+        <h3>帰属（クレジット）表示の義務</h3>
+        <p>
+          本 API のデータを公開展示または転送する場合、API レスポンス内の <code>attribution</code> フィールドに含まれるデータ提供元のクレジットを必ず保持・表示してください。
+        </p>
+      </div>
+
+      <div class="term-box">
+        <span class="term-number">第3条</span>
+        <h3>代替データベース構築の禁止</h3>
+        <p>
+          競合する公開データベースやミラーサイトを構築することを目的とした、データの大量スクレイピングは固く禁止します。
+        </p>
+      </div>
+
+      <div class="term-box">
+        <span class="term-number">第4条</span>
+        <h3>非公式データおよび免責事項</h3>
+        <p>
+          提供されるデータは非公式な現状有姿（as-is）のものであり、遅延や誤差を含む可能性があります。航空機の航行、航空管制、人命に関わる用途には絶対に使用しないでください。
+        </p>
+      </div>
+
+      <div class="term-box">
+        <span class="term-number">第5条</span>
+        <h3>利用制限およびアクセス権の取消</h3>
+        <p>
+          利用規約への違反、商用目的での不正利用、過度なアクセスが確認された場合、当社は事前の通知なく API キーの停止・取消を行う権利を有します。
+        </p>
+      </div>
+
+      <div class="term-box">
+        <span class="term-number">第6条</span>
+        <h3>知的財産権および論文引用の義務</h3>
+        <p>
+          データの権利は各提供元に帰属します。学術研究で OpenSky Network のデータを使用する場合、以下の論文を引用してください：
+        </p>
+        <div class="citation-box">
+          <button class="copy-btn" onclick="copyCitation()">BibTeX をコピー</button>
+          Matthias Schäfer, Martin Strohmeier, Vincent Lenders, Ivan Martinovic and Matthias Wilhelm. "Bringing Up OpenSky: A Large-scale ADS-B Sensor Network for Research". In Proceedings of the 13th IEEE/ACM International Symposium on Information Processing in Sensor Networks (IPSN), pages 83-94, April 2014.
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Support -->
+    <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 20px; margin-top: 32px; font-size: 13.5px; color: var(--text-muted);">
+      Inquiries regarding compliance or abuse reports: <a href="mailto:team@veyino.org" style="color: var(--accent-blue); text-decoration: underline;">team@veyino.org</a>
+    </div>
+  </div>
+
+  <footer style="border-top: 1px solid var(--border-subtle); padding: 24px; text-align: center; font-size: 13px; color: var(--text-dim); background: var(--bg-card);">
+    Contrail &copy; 2026. Strictly Non-Commercial Use Only. Upstream positions by The OpenSky Network & adsb.lol.
+  </footer>
+
+  <script>
+    function switchTermsLang(lang) {
+      document.querySelectorAll('.terms-lang-panel').forEach(p => p.style.display = 'none');
+      document.querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active'));
+      const activePanel = document.getElementById('terms-' + lang);
+      if (activePanel) activePanel.style.display = 'block';
+      event.target.classList.add('active');
+    }
+
+    function copyCitation() {
+      const bibtex = `@inproceedings{schafer2014bringing,
+  title={Bringing up OpenSky: A large-scale ADS-B sensor network for research},
+  author={Sch{\\"a}fer, Matthias and Strohmeier, Martin and Lenders, Vincent and Martinovic, Ivan and Wilhelm, Matthias},
+  booktitle={Proceedings of the 13th IEEE/ACM International Symposium on Information Processing in Sensor Networks (IPSN)},
+  pages={83--94},
+  year={2014}
+}`;
+      navigator.clipboard.writeText(bibtex).then(() => {
+        alert('BibTeX citation copied to clipboard.');
+      });
+    }
+  </script>
+</body>
+</html>
